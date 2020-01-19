@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ETChallengeWeb.Models;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace ETChallengeWeb.Controllers
 {
@@ -18,9 +20,35 @@ namespace ETChallengeWeb.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+
+            UserCurrentBudgetModel budget; ;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://expensestrackerservices3.azurewebsites.net/api/");
+                //HTTP GET
+                var responseTask = client.GetAsync("UserBudgets?userId=ingris");
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = await result.Content.ReadAsStringAsync();
+
+                    budget = JsonConvert.DeserializeObject<UserCurrentBudgetModel>(readTask);
+                }
+                else //web api sent error response 
+                {
+                    //log response status here..
+
+                    budget = new UserCurrentBudgetModel();
+                    budget.ValidationMessage = "Server error. Please contact administrator.";
+                    ModelState.AddModelError(string.Empty, budget.ValidationMessage);
+                }
+            }
+            return View(budget);
         }
 
         public IActionResult Privacy()
