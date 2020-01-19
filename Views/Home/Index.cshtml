@@ -4,44 +4,93 @@
 
 @model UserCurrentBudgetModel
 
+<div class="text-center">
+    <h1 class="display-4">Welcome Ingris!</h1>
+    <h3 class="display-3">Expenses Tracker ChallengeApp</h3>
     <div class="text-center">
-        <h1 class="display-4">Welcome Ingris!</h1>
-        <h3 class="display-3">Expenses Tracker ChallengeApp</h3>
-        <div class="text-center">
-            <table>
-                <tr><th>
-    <span class="text-danger">@Html.ValidationSummary(false)</span>
-</th>
-                </tr>
-            </table>
-        </div>
-        @if (Model.IsProposedBudget)
-        {
-            <form method="post" class="align-content-center" asp-action="CreateBudget">
-                <div class="form-row ">
-                    <div class="form-group col-md-4 ">
-                        <label for="inputBudgetName4">@Model.Budget.Name</label>
-                        <input type="text" hidden="hidden" class="form-control" id="inputBudgetName4" placeholder="Budget Name">
+        <table>
+            <tr>
+                <th>
+                    <span class="text-danger">@Html.ValidationSummary(false)</span>
+                </th>
+            </tr>
+        </table>
+    </div>
+    @if (Model.IsProposedBudget)
+    {
+        <form method="post" class="align-content-center" asp-action="CreateBudget">
+            <div class="form-row ">
+                <div class="form-group col-md-4 ">
+                    <label for="inputBudgetName4">@Model.Budget.Name</label>
+                    <input type="text" hidden="hidden" class="form-control" id="inputBudgetName4" placeholder="Budget Name">
+                </div>
+                <div class="form-row col-md-4">
+                    <div class="col">
+                        <label for="inputcurrencyBudget5">@Model.Budget.Currency</label>
+                        <input asp-for="Budget.Currency" type="text" hidden="hidden" class="form-control" id="inputcurrencyBudget5">
                     </div>
-                    <div class="form-row col-md-4">
-                        <div class="col">
-                            <label for="inputcurrencyBudget5">@Model.Budget.Currency</label>
-                            <input asp-for="Budget.Currency" type="text" hidden="hidden" class="form-control" id="inputcurrencyBudget5">
-                        </div>
-                        <div>
-                            <label hidden="hidden" for="inputTotalBudgetAmount6">@Model.Budget.Amount</label>
-                            <input asp-for="Budget.Amount" type="number" class="form-control" id="inputTotalBudgetAmount6" placeholder="TotalBudgetAmount">
-                            <input asp-for="Budget.StartDate" type="datetime" hidden="hidden">
-                            <input asp-for="Budget.EndDate" type="datetime" hidden="hidden">
-                            <input asp-for="Budget.UserId" type="text" hidden="hidden">
-                        </div>
+                    <div div class="col">
+                        <label hidden="hidden" for="inputTotalBudgetAmount6">@Model.Budget.Amount</label>
+                        <input asp-for="Budget.Amount" type="number" class="form-control" id="inputTotalBudgetAmount6" placeholder="TotalBudgetAmount">
+                        <input asp-for="Budget.StartDate" type="datetime" hidden="hidden">
+                        <input asp-for="Budget.EndDate" type="datetime" hidden="hidden">
+                        <input asp-for="Budget.UserId" type="text" hidden="hidden">
+                        <input asp-for="IsProposedBudget"  hidden="hidden">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Create</button>
 
-            </form>
+            </div>
+            <div class="form-row col-md-6">
 
-        }
+                <div class="col">
+                    <table class="align-content-sm-center">
+                        <tr><th></th><th></th></tr>
+                        @for (int i = 0; i < Model.Budget.BudgetCategory.Count; i++)
+                        {
+                    <tr>
+                        <td>
+                            @if (!Model.Budget.BudgetCategory[i].IsNew)
+                            {
+                                <label>@Model.Budget.BudgetCategory[i].Name</label>
+                                <input asp-for="@Model.Budget.BudgetCategory[i].Name" hidden="hidden" type="text" />
+                            }
+                            else
+                            {
+
+                                <input asp-for="@Model.Budget.BudgetCategory[i].Name" type="text" />
+                            }
+                        </td>
+                        <td>
+                            <input asp-for="@Model.Budget.BudgetCategory[i].CategoryId" hidden="hidden" />
+                            <input asp-for="@Model.Budget.BudgetCategory[i].IsNew" hidden="hidden" />
+                            <input asp-for="@Model.Budget.BudgetCategory[i].Percentage" class="form-control" type="number" />
+                        </td>
+                        <td>
+                            <label>%</label>
+                        </td>
+                        <td>
+                            <label>@Model.Budget.Currency</label>
+                        </td>
+                        <td>
+                            <input asp-for="@Model.Budget.BudgetCategory[i].Amount" class="form-control" type="number"/>
+                        </td>
+                    </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" value="Add"
+                    formaction="/Home/AddCategory" formmethod="post">
+                + Add Category
+            </button>
+            <button type="submit" class="btn btn-primary" value="Save"
+                    formaction="/Home/CreateBudget" formmethod="post">
+                Create Budget
+            </button>
+
+        </form>
+
+    }
 
 
-    </div>
+</div>

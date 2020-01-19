@@ -21,5 +21,45 @@ namespace ETChallengeWeb.Controllers
 
         public DateTime EndDate { get; set; }
         public string UserId { get; set; }
+        public List<BudgetCategoryDto> BudgetCategory { get; set; }
+
+        internal BudgetCategoryDto CreateNewCustomCategory()
+        {
+
+            var newAmount = BudgetCategory.Sum(c => c.Amount);
+
+            var newCat = new BudgetCategoryDto {IsNew=true, Name = $"Custom {BudgetCategory.Count(c => c.IsNew) + 1}" };
+
+            if (newAmount > Amount)
+            {
+                Amount = newAmount;
+                RedistributePercentages();
+            }else
+            {
+                var newpercentaje = BudgetCategory.Sum(c => c.Percentage);
+                newCat.Amount = Amount - newAmount;
+                decimal newCatPercentage = (100 - newpercentaje);
+                newCat.Percentage = newCatPercentage < 0 ? 0 : newCatPercentage;
+            }
+            return newCat;
+
+        }
+
+        public void RedistributePercentages()
+        {
+            foreach (var item in BudgetCategory)
+            {
+                item.Amount = item.Amount == 0 && item.Percentage > 0 ? Math.Round(Amount * (item.Percentage/100),0) : item.Amount;
+                item.Percentage = item.Amount != 0 ? Math.Round(Math.Round(item.Amount / Amount,2 )*100,0) : 0;
+            }
+        }
+    }
+    public class BudgetCategoryDto
+    {
+        public int CategoryId { get; set; }
+        public string Name { get; set; }
+        public decimal Percentage { get; set; }
+        public decimal Amount { get; set; }
+        public bool IsNew { get; set; }
     }
 }

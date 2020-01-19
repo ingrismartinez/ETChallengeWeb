@@ -38,6 +38,7 @@ namespace ETChallengeWeb.Controllers
                     var readTask = await result.Content.ReadAsStringAsync();
 
                     budget = JsonConvert.DeserializeObject<UserCurrentBudgetModel>(readTask);
+                    budget.Budget.RedistributePercentages();
                 }
                 else //web api sent error response 
                 {
@@ -82,13 +83,23 @@ namespace ETChallengeWeb.Controllers
                 {
                     //log response status here..
 
-                    Model = new UserCurrentBudgetModel();
                     Model.ValidationMessage = "Server error. Please contact administrator.";
                     ModelState.AddModelError("ErrorModel", Model.ValidationMessage);
+                    return View("Index", Model);
                 }
             }
             return RedirectToAction("Index",Model);
         }
+        
+        [HttpPost]
+        public IActionResult AddCategory(
+            UserCurrentBudgetModel Model)
+        {
+            var newCategory = Model.Budget.CreateNewCustomCategory();
+            Model.Budget.BudgetCategory.Add(newCategory);
+            return View("Index",Model);
+        }
+        
         public IActionResult Privacy()
         {
             return View();
