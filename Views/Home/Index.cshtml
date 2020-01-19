@@ -22,7 +22,7 @@
             <div class="form-row ">
                 <div class="form-group col-md-4 ">
                     <label for="inputBudgetName4">@Model.Budget.Name</label>
-                    <input type="text" hidden="hidden" class="form-control" id="inputBudgetName4" placeholder="Budget Name">
+                    <input type="text" asp-for="Budget.Name" hidden="hidden" class="form-control" id="inputBudgetName4" placeholder="Budget Name">
                 </div>
                 <div class="form-row col-md-4">
                     <div class="col">
@@ -52,7 +52,7 @@
                             @if (!Model.Budget.BudgetCategory[i].IsNew)
                             {
                                 <label>@Model.Budget.BudgetCategory[i].Name</label>
-                                <input asp-for="@Model.Budget.BudgetCategory[i].Name" hidden="hidden" type="text" />
+                                <input asp-for="@Model.Budget.BudgetCategory[i].Name"  hidden="hidden" type="text" />
                             }
                             else
                             {
@@ -63,7 +63,7 @@
                         <td>
                             <input asp-for="@Model.Budget.BudgetCategory[i].CategoryId" hidden="hidden" />
                             <input asp-for="@Model.Budget.BudgetCategory[i].IsNew" hidden="hidden" />
-                            <input asp-for="@Model.Budget.BudgetCategory[i].Percentage" class="form-control" type="number" />
+                            <input asp-for="@Model.Budget.BudgetCategory[i].Percentage" class="form-control" type="text" />
                         </td>
                         <td>
                             <label>%</label>
@@ -72,7 +72,7 @@
                             <label>@Model.Budget.Currency</label>
                         </td>
                         <td>
-                            <input asp-for="@Model.Budget.BudgetCategory[i].Amount" class="form-control" type="number"/>
+                            <input asp-for="@Model.Budget.BudgetCategory[i].Amount" class="form-control" type="text"/>
                         </td>
                     </tr>
                         }

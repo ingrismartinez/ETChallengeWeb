@@ -97,7 +97,10 @@ namespace ETChallengeWeb.Controllers
         {
             var newCategory = Model.Budget.CreateNewCustomCategory();
             Model.Budget.BudgetCategory.Add(newCategory);
-            return View("Index",Model);
+            Model.Budget.RedistributePercentages();
+            var updatedModel = AddingEveryNewCategory(Model);
+            ModelState.Clear();
+            return View("Index",updatedModel);
         }
         
         public IActionResult Privacy()

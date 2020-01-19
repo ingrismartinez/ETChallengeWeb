@@ -33,7 +33,6 @@ namespace ETChallengeWeb.Controllers
             if (newAmount > Amount)
             {
                 Amount = newAmount;
-                RedistributePercentages();
             }else
             {
                 var newpercentaje = BudgetCategory.Sum(c => c.Percentage);
