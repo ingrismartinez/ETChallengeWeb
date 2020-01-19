@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using ETChallengeWeb.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace ETChallengeWeb.Controllers
 {
@@ -22,14 +23,13 @@ namespace ETChallengeWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-
-            UserCurrentBudgetModel budget; ;
+            UserCurrentBudgetModel budget;
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("https://expensestrackerservices3.azurewebsites.net/api/");
                 //HTTP GET
-                var responseTask = client.GetAsync("UserBudgets?userId=ingris");
+                var responseTask = client.GetAsync("UserBudgets?userId=ingri");
                 responseTask.Wait();
 
                 var result = responseTask.Result;
@@ -50,7 +50,45 @@ namespace ETChallengeWeb.Controllers
             }
             return View(budget);
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateBudget(
+            UserCurrentBudgetModel Model)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://expensestrackerservices3.azurewebsites.net");
+                var content = new StringContent(JsonConvert.SerializeObject(Model.Budget), Encoding.UTF8, "application/json");
 
+                var responseTask = client.PostAsync("/api/UserBudgets/add-budget",content);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = await result.Content.ReadAsStringAsync();
+
+                    var newModel= JsonConvert.DeserializeObject<UserCurrentBudgetModel>(readTask);
+                    if(!string.IsNullOrWhiteSpace(newModel.ValidationMessage))
+                    {
+                        ModelState.AddModelError("ErrorModel", newModel.ValidationMessage);
+
+                        return View("Index", newModel);
+                    }
+                    else{
+                        Model = newModel;
+                    }
+                }
+                else //web api sent error response 
+                {
+                    //log response status here..
+
+                    Model = new UserCurrentBudgetModel();
+                    Model.ValidationMessage = "Server error. Please contact administrator.";
+                    ModelState.AddModelError("ErrorModel", Model.ValidationMessage);
+                }
+            }
+            return RedirectToAction("Index",Model);
+        }
         public IActionResult Privacy()
         {
             return View();
