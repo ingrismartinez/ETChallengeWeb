@@ -23,15 +23,15 @@ namespace ETChallengeWeb.Models
         public string Name { get; set; }
         public bool IsOk()
         {
-            return ExpendedPercentage < 50;
+            return ExpendedPercentage < 25 && ExpendedPercentage > 0;
         }
         public bool IsWarning()
         {
-            return ExpendedPercentage < 80;
+            return ExpendedPercentage < 75 && ExpendedPercentage > 0;
         }
         public bool IsExpendingMore()
         {
-            return ExpendedPercentage >= 80;
+            return ExpendedPercentage >= 75 && ExpendedPercentage > 0;
         }
         
     }

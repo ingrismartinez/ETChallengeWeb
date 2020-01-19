@@ -1,4 +1,4 @@
-﻿@model ETChallengeWeb.Models.BudgetExpensesModel
+﻿@model BudgetExpensesModel
 
 @{
     ViewData["Title"] = "Expenses";
@@ -7,8 +7,8 @@
 
 <h1>Expenses</h1>
 <div class="col-md-4">
-    @*<label>@Model.BudgetName</label>*@
-    @*<input asp-for="BudgetName" hidden="hidden" >*@
+    <label>@Model.BudgetName @Model.Currency @Model.Amount budgeted </label>
+    <input asp-for="BudgetName" hidden="hidden" >
 </div>
 <table class="table">
     <tbody>
@@ -16,14 +16,15 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    <label>@item.Name</label>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ExpendedAmount)
+
+                    <label>@Model.Currency @item.ExpendedAmount Expended</label>
                 </td>
                 <td>
-                    @Html.ActionLink("Add", "AddExpense", item) |
-                    @Html.ActionLink("Details", "Details", item) |
+                    @Html.ActionLink("Add", "AddExpense",new { category = item, model = Model }) |
+                    @Html.ActionLink("Details", "Details", new { category = item, model = Model }) |
                 </td>
 
             </tr>
@@ -32,22 +33,28 @@
                     @if (item.IsOk())
                     {
                         <div class="progress">
-                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 50%" aria-valuenow={item.ExpendedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                                }
+                    }
                     else if (item.IsWarning())
                     {
                         <div class="progress">
-                            <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 80%" aria-valuenow={item.ExpendedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                                }
+                    }
+                    else if (item.IsExpendingMore())
+                    {
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    }
                     else
                     {
                         <div class="progress">
-                            <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow={item.ExpendedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar progress-bar-striped " role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                                }
-                    
+                    }
+
                 </td>
             </tr>
         }

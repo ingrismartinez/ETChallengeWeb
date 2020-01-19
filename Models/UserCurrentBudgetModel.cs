@@ -16,7 +16,7 @@ namespace ETChallengeWeb.Models
 
         public BudgetExpensesModel AsBudgetExpenseModel()
         {
-            return new BudgetExpensesModel
+            var budget= new BudgetExpensesModel
             {
                 Amount = Budget.Amount,
                 BudgetName = Budget.Name,
@@ -27,11 +27,12 @@ namespace ETChallengeWeb.Models
                     Id = c.Id,
                     Percentage = c.Percentage,
                     Expenses = c.Expenses,
-                    ExpendedAmount = c.Expenses.Sum(d => d.Value),
+                    ExpendedAmount = (c.Expenses?.Sum(d => d.Value))??0,
                     Name= c.Name,
-                    ExpendedPercentage = (c.Expenses.Sum(d => d.Value) / c.Amount) * 100
+                    ExpendedPercentage = (((c.Expenses?.Sum(d => d.Value))??0) / c.Amount) * 100
                 }).ToList(),
             };
+            return budget;
         }
     }
 }

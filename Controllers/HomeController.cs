@@ -41,7 +41,9 @@ namespace ETChallengeWeb.Controllers
                     
                     if(!budget.IsProposedBudget)
                     {
-                        return RedirectToAction("Index", "Expenses", budget.AsBudgetExpenseModel());
+                        var request = Newtonsoft.Json.JsonConvert.SerializeObject(budget.AsBudgetExpenseModel());
+                        TempData["BudgetExpensesModel"] = request;
+                        return RedirectToAction("Index", "Expenses" );
                     }
                 }
                 else //web api sent error response 
