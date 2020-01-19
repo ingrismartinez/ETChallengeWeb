@@ -13,4 +13,9 @@ namespace ETChallengeWeb.Controllers
         public string Currency { get; set; }
         public decimal Amount { get; set; }
     }
+    public class CategoryRequest
+    {
+        public string CategoryName { get; set; }
+        public string userId { get; set; }
+    }
 }

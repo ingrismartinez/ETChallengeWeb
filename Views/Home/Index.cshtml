@@ -72,7 +72,9 @@
                             <label>@Model.Budget.Currency</label>
                         </td>
                         <td>
-                            <input asp-for="@Model.Budget.BudgetCategory[i].Amount" class="form-control" type="text"/>
+                            <input asp-for="@Model.Budget.BudgetCategory[i].Amount" class="form-control" type="text" 
+                                   asp-controller="Home" 
+                                asp-action="Refresh"/>
                         </td>
                     </tr>
                         }
@@ -81,8 +83,12 @@
             </div>
             <button type="submit" class="btn btn-primary" value="Add"
                     formaction="/Home/AddCategory" formmethod="post">
-                + Add Category
+               Add Category
             </button>
+            <button type="submit" class="btn btn-primary" value="Refresh"
+        formaction="/Home/Refresh" formmethod="post">
+    ReCalculate
+</button>
             <button type="submit" class="btn btn-primary" value="Save"
                     formaction="/Home/CreateBudget" formmethod="post">
                 Create Budget

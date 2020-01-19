@@ -38,7 +38,7 @@ namespace ETChallengeWeb.Controllers
                     var readTask = await result.Content.ReadAsStringAsync();
 
                     budget = JsonConvert.DeserializeObject<UserCurrentBudgetModel>(readTask);
-                    budget.Budget.RedistributePercentages();
+                    
                 }
                 else //web api sent error response 
                 {
@@ -55,10 +55,16 @@ namespace ETChallengeWeb.Controllers
         public async Task<IActionResult> CreateBudget(
             UserCurrentBudgetModel Model)
         {
+            Model = await AddingEveryNewCategory(Model);
+            if(!ModelState.IsValid)
+            {
+                return View("Index", Model);
+            }
             using (var client = new HttpClient())
             {
+                var request = Model.Budget.AsMonthBudgetRequest();
                 client.BaseAddress = new Uri("https://expensestrackerservices3.azurewebsites.net");
-                var content = new StringContent(JsonConvert.SerializeObject(Model.Budget), Encoding.UTF8, "application/json");
+                var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
                 var responseTask = client.PostAsync("/api/UserBudgets/add-budget",content);
                 responseTask.Wait();
@@ -72,8 +78,8 @@ namespace ETChallengeWeb.Controllers
                     if(!string.IsNullOrWhiteSpace(newModel.ValidationMessage))
                     {
                         ModelState.AddModelError("ErrorModel", newModel.ValidationMessage);
-
-                        return View("Index", newModel);
+                        
+                        return View("Index", Model);
                     }
                     else{
                         Model = newModel;
@@ -98,11 +104,56 @@ namespace ETChallengeWeb.Controllers
             var newCategory = Model.Budget.CreateNewCustomCategory();
             Model.Budget.BudgetCategory.Add(newCategory);
             Model.Budget.RedistributePercentages();
-            var updatedModel = AddingEveryNewCategory(Model);
             ModelState.Clear();
-            return View("Index",updatedModel);
+            return View("Index",Model);
         }
-        
+        [HttpPost]
+        public IActionResult Refresh(
+            UserCurrentBudgetModel Model)
+        {
+            Model.Budget.RedistributePercentages();
+            ModelState.Clear();
+            return View("Index", Model);
+        }
+        private async Task< UserCurrentBudgetModel> AddingEveryNewCategory(UserCurrentBudgetModel model)
+        {
+            foreach (var item in model.Budget.BudgetCategory.Where(c=>c.IsNew).ToList())
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://expensestrackerservices3.azurewebsites.net");
+                    var request = new CategoryRequest { CategoryName = item.Name, userId = model.Budget.UserId };
+                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+                    var responseTask = client.PostAsync("/api/ExpenseCategories/add-custom", content);
+                    responseTask.Wait();
+
+                    var result = responseTask.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var readTask = await result.Content.ReadAsStringAsync();
+
+                        var newModel = JsonConvert.DeserializeObject<CategoryResponse>(readTask);
+                        if (string.IsNullOrWhiteSpace(newModel.ValidationMessage))
+                        {
+                            item.CategoryId = newModel.CategoryId;
+                            item.IsNew = false;
+                        }else
+                        {
+                            ModelState.AddModelError("ErrorMessage", newModel.ValidationMessage);
+                            break;
+                        }
+                    }
+                    else //web api sent error response 
+                    {
+                        ModelState.AddModelError("ErrorModel", "Server error. Please contact administrator.");
+   
+                    }
+                }
+            }
+            return model;
+        }
+
         public IActionResult Privacy()
         {
             return View();
