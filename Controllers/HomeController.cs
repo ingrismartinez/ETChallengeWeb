@@ -39,6 +39,10 @@ namespace ETChallengeWeb.Controllers
 
                     budget = JsonConvert.DeserializeObject<UserCurrentBudgetModel>(readTask);
                     
+                    if(!budget.IsProposedBudget)
+                    {
+                        return RedirectToAction("Index", "Expenses", budget.AsBudgetExpenseModel());
+                    }
                 }
                 else //web api sent error response 
                 {

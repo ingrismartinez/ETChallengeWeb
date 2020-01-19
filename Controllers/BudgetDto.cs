@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ETChallengeWeb.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -69,12 +70,15 @@ namespace ETChallengeWeb.Controllers
     }
     public class BudgetCategoryDto
     {
+        public int Id { get; set; }
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public decimal Percentage { get; set; }
         public decimal Amount { get; set; }
         public bool IsNew { get; set; }
+        public List<Expense> Expenses { get; set; }
     }
+    
     public class CategoryResponse
     {
         public string ValidationMessage { get; set; }

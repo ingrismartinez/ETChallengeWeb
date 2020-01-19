@@ -1,0 +1,55 @@
+﻿@model ETChallengeWeb.Models.BudgetExpensesModel
+
+@{
+    ViewData["Title"] = "Expenses";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Expenses</h1>
+<div class="col-md-4">
+    @*<label>@Model.BudgetName</label>*@
+    @*<input asp-for="BudgetName" hidden="hidden" >*@
+</div>
+<table class="table">
+    <tbody>
+        @foreach (var item in Model.Detail)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpendedAmount)
+                </td>
+                <td>
+                    @Html.ActionLink("Add", "AddExpense", item) |
+                    @Html.ActionLink("Details", "Details", item) |
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    @if (item.IsOk())
+                    {
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 50%" aria-valuenow={item.ExpendedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                                }
+                    else if (item.IsWarning())
+                    {
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 80%" aria-valuenow={item.ExpendedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                                }
+                    else
+                    {
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow={item.ExpendedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                                }
+                    
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

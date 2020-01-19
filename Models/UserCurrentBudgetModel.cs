@@ -12,8 +12,26 @@ namespace ETChallengeWeb.Models
     {
         public bool IsProposedBudget { get; set; }
         public string ValidationMessage { get; set; }
-
         public BudgetDto Budget { get; set; }
 
+        public BudgetExpensesModel AsBudgetExpenseModel()
+        {
+            return new BudgetExpensesModel
+            {
+                Amount = Budget.Amount,
+                BudgetName = Budget.Name,
+                Currency = Budget.Currency,
+                UserId = Budget.UserId,
+                Detail = Budget.BudgetCategory?.Select(c => new BudgetCategory
+                {
+                    Id = c.Id,
+                    Percentage = c.Percentage,
+                    Expenses = c.Expenses,
+                    ExpendedAmount = c.Expenses.Sum(d => d.Value),
+                    Name= c.Name,
+                    ExpendedPercentage = (c.Expenses.Sum(d => d.Value) / c.Amount) * 100
+                }).ToList(),
+            };
+        }
     }
 }
