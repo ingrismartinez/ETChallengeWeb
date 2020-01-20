@@ -13,16 +13,17 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Expenses) {
+@foreach (var item in Model.GetCurrentBudget()) {
         <tr>
             <td><label>@item.BudgetName</label></td>
             <td><label>@item.CategoryName</label></td>
             <td>
-                @Html.DisplayText(item.Description)
+                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td><label>@item.ExpendedValue</label></td>
             <td><label>@item.TransactionDate</label></td>
             <td>
+                @Html.ActionLink("Edit", "Edit", new { expenseId =item.ExpenseId,userId= item.UserId,descripcion=item.Description,value= item.ExpendedValue,TransactionDate = item.TransactionDate }) |
                 @Html.ActionLink("Delete", "Delete", new { UserId=item.UserId,ExpenseId=item.ExpenseId })
             </td>
         </tr>
