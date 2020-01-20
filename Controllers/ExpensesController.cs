@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ETChallengeWeb.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -28,15 +30,40 @@ namespace ETChallengeWeb.Controllers
             }
             return View(model);
         }
-        [HttpGet]
-        public IActionResult AddExpense( BudgetCategory category,BudgetExpensesModel model)
+        [HttpPost]
+        public async Task<IActionResult> AddExpense(BudgetExpensesModel Model)
         {
-            if (TempData["BudgetExpensesModel"] is string s)
+            using (var client = new HttpClient())
             {
-                model = JsonConvert.DeserializeObject<BudgetExpensesModel>(s);
-                // use newUser object now as needed
+                client.BaseAddress = new Uri("https://expensestrackerservices3.azurewebsites.net");
+                var request = Model.AsNewExpenseRequest();
+                var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+                var responseTask = client.PostAsync("/api/Expenses/add", content);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = await result.Content.ReadAsStringAsync();
+
+                    var response = JsonConvert.DeserializeObject<ExpensesResponse>(readTask);
+
+                    if (response.IsValid())
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("ErrorMessage", response.ValidationMessage);
+                    }
+                }
+                else //web api sent error response 
+                {
+                    ModelState.AddModelError("ErrorMessage", "Server error. Please contact administrator.");
+                }
             }
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

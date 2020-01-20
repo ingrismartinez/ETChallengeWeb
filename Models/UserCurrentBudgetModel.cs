@@ -24,9 +24,9 @@ namespace ETChallengeWeb.Models
                 UserId = Budget.UserId,
                 Detail = Budget.BudgetCategory?.Select(c => new BudgetCategory
                 {
-                    Id = c.Id,
+                    Id = c.Id.ToString(),
                     Percentage = c.Percentage,
-                    Expenses = c.Expenses,
+                    Expenses = c.Expenses?? new List<Expense>(),
                     ExpendedAmount = (c.Expenses?.Sum(d => d.Value))??0,
                     Name= c.Name,
                     ExpendedPercentage = (((c.Expenses?.Sum(d => d.Value))??0) / c.Amount) * 100

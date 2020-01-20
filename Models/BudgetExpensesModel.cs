@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ETChallengeWeb.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,10 +13,28 @@ namespace ETChallengeWeb.Models
         public string Currency { get; set; }
         public decimal Amount { get; set; }
         public List<BudgetCategory> Detail { get; set; }
+        public Expense NewExpense { get; set; }
+
+        public BudgetExpensesModel()
+        {
+            NewExpense = new Expense() {TransactionDate=DateTime.Now };
+        }
+
+        internal ExpenseRequest AsNewExpenseRequest()
+        {
+            return new ExpenseRequest
+            {
+                CategoryId = NewExpense.Id,
+                Description = NewExpense.Description,
+                ExpendedValue = NewExpense.Value,
+                TransactionDate = NewExpense.TransactionDate,
+                UserId = UserId
+            };
+        }
     }
     public class BudgetCategory
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public decimal Percentage { get; set; }
         public decimal ExpendedPercentage { get; set; }
         public decimal ExpendedAmount { get; set; }
@@ -37,8 +56,9 @@ namespace ETChallengeWeb.Models
     }
     public class Expense
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public decimal Value { get; set; }
         public string Description { get; set; }
+        public DateTime TransactionDate { get; set; }
     }
 }

@@ -1,48 +1,89 @@
-﻿@model BudgetExpensesModel
+﻿
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".datepicker").datepicker({ format: 'dd/mm/yyyy', autoclose: true, todayBtn: 'linked' })
+    });
+</script>
 
+@model BudgetExpensesModel
 @{
     ViewData["Title"] = "Expenses";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<h1>Expenses @Model.BudgetName </h1>
+<form method="post" class="align-content-center" asp-action="AddExpense">
+    <div class="table-title">
+        <div class="row">
+            <div class="col-sm-8"><h2>Budgeted <b>@Model.Currency @Model.Amount </b></h2></div>
+        </div>
+    </div>
+    <table class="table table-bordered" id="expenses">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Value</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <select asp-for="NewExpense.Id"
+                            asp-items="@(new SelectList(Model.Detail,"Id","Name",Model.NewExpense.Id))">
+                    </select>
+                </td>
+                <td>
+                    <input type="text" asp-for="NewExpense.Description" class="form-control">
+                    <input type="text" hidden="hidden" asp-for="UserId" class="form-control">
+                </td>
+                <td><input type="number" asp-for="NewExpense.Value" class="form-control"></td>
+                <td>
+                    <input type="text" id="fromDate" class="datepicker" asp-for="NewExpense.TransactionDate" /></td>
+                <td>
+                    <button type="submit" class="btn btn-primary" value="Save"
+                            formaction="/Expenses/AddExpense" formmethod="post">
+                        Add
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-<h1>Expenses</h1>
-<div class="col-md-4">
-    <label>@Model.BudgetName @Model.Currency @Model.Amount budgeted </label>
-    <input asp-for="BudgetName" hidden="hidden" >
-</div>
+
+</form>
 <table class="table">
     <tbody>
-        @foreach (var item in Model.Detail)
+
+        @for (int i = 0; i < Model.Detail.Count; i++)
         {
             <tr>
                 <td>
-                    <label>@item.Name</label>
+                    <label>@Model.Detail[i].Name @Model.Currency @Model.Detail[i].ExpendedAmount Expended</label>
                 </td>
-                <td>
-
-                    <label>@Model.Currency @item.ExpendedAmount Expended</label>
-                </td>
-                <td>
-                    @Html.ActionLink("Add", "AddExpense",new { category = item, model = Model }) |
-                    @Html.ActionLink("Details", "Details", new { category = item, model = Model }) |
-                </td>
-
             </tr>
             <tr>
                 <td>
-                    @if (item.IsOk())
+                    @if (Model.Detail[i].IsOk())
                     {
                         <div class="progress">
                             <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     }
-                    else if (item.IsWarning())
+                    else if (Model.Detail[i].IsWarning())
                     {
                         <div class="progress">
                             <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     }
-                    else if (item.IsExpendingMore())
+                    else if (Model.Detail[i].IsExpendingMore())
                     {
                         <div class="progress">
                             <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
@@ -57,6 +98,7 @@
 
                 </td>
             </tr>
+
         }
     </tbody>
 </table>
