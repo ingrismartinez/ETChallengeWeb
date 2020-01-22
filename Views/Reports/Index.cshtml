@@ -1,4 +1,6 @@
-﻿@model ReportsModel
+﻿
+
+@model ReportsModel
 
 @{
     ViewData["Title"] = "Index";
@@ -13,20 +15,45 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.GetCurrentBudget()) {
-        <tr>
-            <td><label>@item.BudgetName</label></td>
-            <td><label>@item.CategoryName</label></td>
-            <td>
-                 @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td><label>@item.ExpendedValue</label></td>
-            <td><label>@item.TransactionDate</label></td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { expenseId =item.ExpenseId,userId= item.UserId,descripcion=item.Description,value= item.ExpendedValue,TransactionDate = item.TransactionDate }) |
-                @Html.ActionLink("Delete", "Delete", new { UserId=item.UserId,ExpenseId=item.ExpenseId })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.GetCurrentBudget())
+        {
+            <tr>
+                <td><label>@item.BudgetName</label></td>
+                <td><label>@item.CategoryName</label></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td><label>@item.ExpendedValue</label></td>
+                <td><label>@item.TransactionDate</label></td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { expenseId = item.ExpenseId, userId = item.UserId, descripcion = item.Description, value = item.ExpendedValue, TransactionDate = item.TransactionDate }) |
+                    @Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, ExpenseId = item.ExpenseId })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+    <table class="table">
+        <thead>
+            Monthly Spending
+        </thead>
+        <tbody>
+            
+            @foreach (var item in Model.MonthlySpent)
+            {
+                <tr>
+                    <td><label>@item.BudgetName</label></td>
+                    <td><label>@item.Currency @item.SpentAmount / @item.BudgetAmount</label></td>
+                    <td>
+                    @if (item.OutOfBudget)
+                    {
+                        <div class="alert alert-danger">
+                            <strong>Out of Budget!</strong>
+                        </div>
+                    }
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>

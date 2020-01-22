@@ -35,6 +35,7 @@ namespace ETChallengeWeb.Controllers
 
                     var records = JsonConvert.DeserializeObject<List<ReportExpenseDto>>(readTask);
                     budget.Expenses = records;
+                    budget.CalculateMonthly();
                 }
                 else //web api sent error response 
                 {
